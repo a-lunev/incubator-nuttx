@@ -105,8 +105,13 @@
 #define SRAM_START STM32_AXISRAM_BASE
 #define SRAM_END   (SRAM_START + STM32H7_SRAM_SIZE)
 
+#undef HAVE_SRAM123
+#if !defined(CONFIG_STM32H7_SRAM123EXCLUDE)
+#  define HAVE_SRAM123 1
+
 #define SRAM123_START STM32_SRAM123_BASE
 #define SRAM123_END   (SRAM123_START + STM32H7_SRAM123_SIZE)
+#endif
 
 #undef HAVE_SRAM4
 #if !defined(CONFIG_STM32H7_SRAM4EXCLUDE)
@@ -350,11 +355,13 @@ void arm_addregion(void)
 
   unsigned mm_regions = 1;
 
+#ifdef HAVE_SRAM123
   if (mm_regions < CONFIG_MM_REGIONS)
     {
       addregion (SRAM123_START, SRAM123_END - SRAM123_START, "SRAM1,2,3");
       mm_regions++;
     }
+#endif
 
 #ifdef HAVE_SRAM4
   if (mm_regions < CONFIG_MM_REGIONS)

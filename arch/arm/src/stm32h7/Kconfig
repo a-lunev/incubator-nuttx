@@ -1759,6 +1759,13 @@ config STM32H7_CUSTOM_CLOCKCONFIG
 	---help---
 		Enables special, board-specific STM32 clock configuration.
 
+config STM32H7_SRAM123EXCLUDE
+	bool "Exclude SRAM123 from the heap"
+	default n
+	---help---
+		Exclude SRAM123 from the HEAP in order to use this region
+		for other uses, such as DMA buffers, etc.
+
 config STM32H7_SRAM4EXCLUDE
 	bool "Exclude SRAM4 from the heap"
 	default n

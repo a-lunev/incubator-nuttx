@@ -138,6 +138,18 @@
 #  define SRAM4_END     (SRAM4_START + STM32H7_SRAM4_SIZE)
 #endif
 
+/* SRAM123 and SRAM4 should be excluded from IDMA access for SDMMC1
+ * not depending on the CONFIG_STM32H7_SDMMC_IDMA option.
+ * Even if CONFIG_STM32H7_SDMMC_IDMA option is disabled,
+ * IDMA is still in use to workaround the lame SDMMC FIFO.
+ */
+
+#if defined(CONFIG_STM32H7_SDMMC1)
+#  if !defined(CONFIG_STM32H7_SRAM123EXCLUDE) || !defined(CONFIG_STM32H7_SRAM4EXCLUDE)
+#    error "SDMMC1 IDMA can not access SRAM123 or SRAM4. Refer to ST AN5200."
+#  endif
+#endif
+
 #ifndef CONFIG_SCHED_WORKQUEUE
 #  error "Callback support requires CONFIG_SCHED_WORKQUEUE"
 #endif
@@ -391,6 +403,10 @@ struct stm32_sdioregs_s
   uint32_t dcount;
   uint32_t sta;
   uint32_t mask;
+  uint32_t idmactrl;
+  uint32_t idmabsize;
+  uint32_t idmabase0;
+  uint32_t idmabase1;
 };
 
 struct stm32_sampleregs_s
@@ -965,6 +981,10 @@ static void stm32_sdiosample(struct stm32_dev_s *priv,
   regs->dcount  = sdmmc_getreg32(priv, STM32_SDMMC_DCOUNT_OFFSET);
   regs->sta     = sdmmc_getreg32(priv, STM32_SDMMC_STA_OFFSET);
   regs->mask    = sdmmc_getreg32(priv, STM32_SDMMC_MASK_OFFSET);
+  regs->idmactrl = sdmmc_getreg32(priv, STM32_SDMMC_IDMACTRLR_OFFSET);
+  regs->idmabsize = sdmmc_getreg32(priv, STM32_SDMMC_IDMABSIZER_OFFSET);
+  regs->idmabase0 = sdmmc_getreg32(priv, STM32_SDMMC_IDMABASE0R_OFFSET);
+  regs->idmabase1 = sdmmc_getreg32(priv, STM32_SDMMC_IDMABASE1R_OFFSET);
 }
 #endif
 
@@ -996,22 +1016,42 @@ static void stm32_sample(struct stm32_dev_s *priv, int index)
 static void stm32_sdiodump(struct stm32_sdioregs_s *regs, const char *msg)
 {
   mcinfo("SDIO Registers: %s\n", msg);
-  mcinfo("  POWER[%08x]: %08" PRIx8 "\n", STM32_SDMMC_POWER_OFFSET,
+  mcinfo("  POWER[%08x]: %08" PRIx8 "\n",
+         STM32_SDMMC_POWER_OFFSET,
          regs->power);
-  mcinfo("  CLKCR[%08x]: %08" PRIx16 "\n", STM32_SDMMC_CLKCR_OFFSET,
+  mcinfo("  CLKCR[%08x]: %08" PRIx16 "\n",
+         STM32_SDMMC_CLKCR_OFFSET,
          regs->clkcr);
-  mcinfo("  DCTRL[%08x]: %08" PRIx16 "\n", STM32_SDMMC_DCTRL_OFFSET,
+  mcinfo("  DCTRL[%08x]: %08" PRIx16 "\n",
+         STM32_SDMMC_DCTRL_OFFSET,
          regs->dctrl);
-  mcinfo(" DTIMER[%08x]: %08" PRIx32 "\n", STM32_SDMMC_DTIMER_OFFSET,
+  mcinfo(" DTIMER[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_DTIMER_OFFSET,
          regs->dtimer);
-  mcinfo("   DLEN[%08x]: %08" PRIx32 "\n", STM32_SDMMC_DLEN_OFFSET,
+  mcinfo("   DLEN[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_DLEN_OFFSET,
          regs->dlen);
-  mcinfo(" DCOUNT[%08x]: %08" PRIx32 "\n", STM32_SDMMC_DCOUNT_OFFSET,
+  mcinfo(" DCOUNT[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_DCOUNT_OFFSET,
          regs->dcount);
-  mcinfo("    STA[%08x]: %08" PRIx32 "\n", STM32_SDMMC_STA_OFFSET,
+  mcinfo("    STA[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_STA_OFFSET,
          regs->sta);
-  mcinfo("   MASK[%08x]: %08" PRIx32 "\n", STM32_SDMMC_MASK_OFFSET,
+  mcinfo("   MASK[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_MASK_OFFSET,
          regs->mask);
+  mcinfo("   IDMACTRL[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_IDMACTRLR_OFFSET,
+         regs->idmactrl);
+  mcinfo("   IDMABSIZE[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_IDMABSIZER_OFFSET,
+         regs->idmabsize);
+  mcinfo("   IDMABASE0[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_IDMABASE0R_OFFSET,
+         regs->idmabase0);
+  mcinfo("   IDMABASE1[%08x]: %08" PRIx32 "\n",
+         STM32_SDMMC_IDMABASE1R_OFFSET,
+         regs->idmabase1);
 }
 #endif
 
