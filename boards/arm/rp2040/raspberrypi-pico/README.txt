@@ -83,7 +83,15 @@ Defconfigs
            VCC ----- 3V3 OUT        (Pin 36)
            SDA ----- GP4 (I2C0 SDA) (Pin 6)
            SCL ----- GP5 (I2C0 SCL) (Pin 7)
-
+           
+- lcd1602 
+    LCD 1602 Segment LCD Disaply (I2C)
+    Connection:
+    PCF8574 BackPack Raspberry Pi Pico
+           GND ----- GND            (Pin 3 or 38 or ...)
+           VCC ----- 5V Vbus        (Pin 40)
+           SDA ----- GP4 (I2C0 SDA) (Pin 6)
+           SCL ----- GP5 (I2C0 SCL) (Pin 7)
 - spisd
     SD card support (SPI connection)
     Connection:
@@ -97,6 +105,19 @@ Defconfigs
        DAT0/DO ----- GP16 (SPI0 RX)  (Pin 21)
        DAT1          (NC)
     * Card hot swapping is not supported.
+
+- st7735
+    st7735 SPI LCD support      
+    Connection:
+      st7735         Raspberry Pi Pico
+           GND ----- GND             (Pin 3 or 38 or ...)
+           VCC ----- 5V Vbus         (Pin 40)
+           SDA ----- GP15 (SPI1 TX)  (Pin 20)
+           SCK ----- GP14 (SPI1 SCK) (Pin 19)
+            CS ----- GP13 (SPI1 CSn) (Pin 17)
+       AO(D/C) ----- GP12 (SPI1 RX)  (Pin 16)
+            BL ----- GP11            (Pin 15)
+         RESET ----- GP10            (Pin 14)  
 
 - enc28j60
     ENC28J60 SPI ethernet controller support

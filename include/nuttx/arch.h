@@ -754,22 +754,22 @@ uintptr_t pgalloc(uintptr_t brkaddr, unsigned int npages);
 #endif
 
 /****************************************************************************
- * Name: up_textheap_init
+ * Name: up_extraheaps_init
  *
  * Description:
- *   Initialize the text heap.
+ *   Initialize any extra heap.
  *
  ****************************************************************************/
 
-#if defined(CONFIG_ARCH_USE_TEXT_HEAP)
-void up_textheap_init(void);
+#if defined(CONFIG_ARCH_HAVE_EXTRA_HEAPS)
+void up_extraheaps_init(void);
 #endif
 
 /****************************************************************************
  * Name: up_textheap_memalign
  *
  * Description:
- *   Allocate memory from the text heap with the specified alignment.
+ *   Allocate memory for text sections with the specified alignment.
  *
  ****************************************************************************/
 
@@ -781,7 +781,7 @@ FAR void *up_textheap_memalign(size_t align, size_t size);
  * Name: up_textheap_free
  *
  * Description:
- *   Free memory from the text heap.
+ *   Free memory allocated for text sections.
  *
  ****************************************************************************/
 
@@ -1456,6 +1456,30 @@ void up_trigger_irq(int irq);
 
 #ifdef CONFIG_ARCH_IRQPRIO
 int up_prioritize_irq(int irq, int priority);
+#endif
+
+#ifdef CONFIG_ARCH_HAVE_TRUSTZONE
+
+/****************************************************************************
+ * Name: up_set_secure_irq
+ *
+ * Description:
+ *   Secure an IRQ
+ *
+ ****************************************************************************/
+
+void up_secure_irq(int irq, bool secure);
+
+/****************************************************************************
+ * Name: up_secure_irq_all
+ *
+ * Description:
+ *   Secure all IRQ
+ *
+ ****************************************************************************/
+
+void up_secure_irq_all(bool secure);
+
 #endif
 
 /****************************************************************************

@@ -40,6 +40,7 @@
 #include "esp32_region.h"
 #include "esp32_start.h"
 #include "esp32_spiram.h"
+#include "esp32_wdt.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -86,12 +87,6 @@ void IRAM_ATTR __start(void)
   uint32_t regval;
   uint32_t sp;
 
-  /* Kill the watchdog timer */
-
-  regval  = getreg32(RTC_CNTL_WDTCONFIG0_REG);
-  regval &= ~RTC_CNTL_WDT_FLASHBOOT_MOD_EN;
-  putreg32(regval, RTC_CNTL_WDTCONFIG0_REG);
-
   /* Make sure that normal interrupts are disabled.  This is really only an
    * issue when we are started in un-usual ways (such as from IRAM).  In this
    * case, we can at least defer some unexpected interrupts left over from
@@ -126,6 +121,13 @@ void IRAM_ATTR __start(void)
   regval  = getreg32(DPORT_APPCPU_CTRL_B_REG);
   regval &= ~DPORT_APPCPU_CLKGATE_EN;
   putreg32(regval, DPORT_APPCPU_CTRL_B_REG);
+
+  /* The 2nd stage bootloader enables RTC WDT to check on startup sequence
+   * related issues in application. Hence disable that as we are about to
+   * start the NuttX environment.
+   */
+
+  esp32_wdt_early_deinit();
 
   /* Set CPU frequency configured in board.h */
 

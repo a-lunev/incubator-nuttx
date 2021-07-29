@@ -118,6 +118,15 @@
 #define GPIO_ENC1_PHASE_B    (GPIO_XBAR1_INOUT08_1|IOMUX_ENC_DEFAULT|PADMUX_MUXMODE_ALT3)  /* EMC_06 */
 #define GPIO_ENC1_INDEX      (GPIO_XBAR1_INOUT10_1|IOMUX_ENC_DEFAULT|PADMUX_MUXMODE_ALT1)  /* B0_12 */
 
+/* GPIO pins used by the GPIO subsystem */
+
+#define BOARD_NGPIOIN   1   /* Amount of GPIO input pins */
+#define BOARD_NGPIOOUT  1   /* Amount of GPIO output pins */
+
+#define GPIO_IN1       (GPIO_INPUT | GPIO_PORT4 | GPIO_PIN4)    /* EMC_04 */
+#define GPIO_OUT1      (GPIO_OUTPUT | GPIO_OUTPUT_ZERO | IOMUX_GOUT_DEFAULT | \
+                        GPIO_PORT4 | GPIO_PIN5)                 /* EMC_05 */
+
 /****************************************************************************
  * Public Types
  ****************************************************************************/
@@ -163,6 +172,18 @@ int imxrt_can_setup(void);
 #endif
 
 /****************************************************************************
+ * Name: imxrt_pwm_setup
+ *
+ * Description:
+ *   Initialize PWM and register the PWM device.
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_IMXRT_FLEXPWM
+int imxrt_pwm_setup(void);
+#endif
+
+/****************************************************************************
  * Name: imxrt_adc_initialize
  *
  * Description:
@@ -172,6 +193,21 @@ int imxrt_can_setup(void);
 
 #ifdef CONFIG_IMXRT_ADC
 int imxrt_adc_initialize(void);
+#endif
+
+/****************************************************************************
+ * Name: imxrt_gpio_initialize
+ *
+ * Description:
+ *   Initialize GPIO drivers for use with /apps/examples/gpio
+ *
+ * Return Value:
+ *   OK on success; a negated errno value on failure.
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_DEV_GPIO
+int imxrt_gpio_initialize(void);
 #endif
 
 /****************************************************************************
